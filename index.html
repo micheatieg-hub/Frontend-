@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Store Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background: black;
+      color: white;
+      cursor: pointer;
+    }
+
+    .output {
+      background: #111;
+      color: #00ffae;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>AI Store Builder 🚀</h1>
+
+  <!-- AUTH -->
+  <div class="card">
+    <h3>Account</h3>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- AI -->
+  <div class="card">
+    <h3>Build Store with AI</h3>
+
+    <input id="prompt" placeholder="e.g. Build a luxury sneaker store">
+
+    <button onclick="generate()">Generate Store</button>
+
+    <div class="output" id="output">AI result will appear here...</div>
+  </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// 🔐 YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyCrx8E5FP2zMNSLlisdZBc8umYFS6Zjw60",
+  authDomain: "my-website1-a4492.firebaseapp.com",
+  projectId: "my-website1-a4492",
+  storageBucket: "my-website1-a4492.firebasestorage.app",
+  messagingSenderId: "465130896675",
+  appId: "1:465130896675:web:f9d67c605764fdad91a096",
+  measurementId: "G-E95634X6SR"
+};
+
+// INIT
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// ================= AUTH =================
+
+window.signup = async function(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Account created ✅");
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+window.login = async function(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Login successful 🚀");
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+// ================= AI =================
+
+const backendURL = "https://YOUR-FIREBASE-FUNCTION-URL";
+
+window.generate = async function(){
+  document.getElementById("output").innerText = "Generating...";
+
+  const prompt = document.getElementById("prompt").value;
+
+  try {
+    const res = await fetch(backendURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("output").innerText =
+      JSON.stringify(data, null, 2);
+
+  } catch (err) {
+    document.getElementById("output").innerText =
+      "Error connecting to AI";
+  }
+};
+
+</script>
+
+</body>
+</html>
