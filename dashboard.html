@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Dashboard</h2>
+
+<h3>Add Product</h3>
+
+<input id="name" placeholder="Product Name">
+<input id="price" placeholder="Price">
+<input type="file" id="image">
+
+<button onclick="addProduct()">Upload Product</button>
+
+<hr>
+
+<h3>Your Products</h3>
+<div id="products"></div>
+
+<script>
+const backendURL = "https://my-backend-d48t.onrender.com";
+const token = localStorage.getItem("token");
+const userId = localStorage.getItem("userId");
+
+// ADD PRODUCT
+function addProduct() {
+  const formData = new FormData();
+  formData.append("name", document.getElementById("name").value);
+  formData.append("price", document.getElementById("price").value);
+  formData.append("image", document.getElementById("image").files[0]);
+
+  fetch(`${backendURL}/products`, {
+    method: "POST",
+    headers: {
+      "Authorization": token
+    },
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    loadProducts();
+  });
+}
+
+// LOAD USER PRODUCTS
+function loadProducts() {
+  fetch(`${backendURL}/products/${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      let html = "";
+
+      data.forEach(p => {
+        html += `
+          <div>
+            <h4>${p.name}</h4>
+            <p>$${p.price}</p>
+          </div>
+        `;
+      });
+
+      document.getElementById("products").innerHTML = html;
+    });
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>
