@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background:#0b1220;
+  color:white;
+}
+.header {
+  padding:20px;
+  background:#111827;
+  display:flex;
+  justify-content:space-between;
+}
+.container {
+  padding:20px;
+}
+.box {
+  background:#111827;
+  padding:20px;
+  margin-top:20px;
+  border-radius:12px;
+}
+input, button {
+  padding:10px;
+  margin-top:10px;
+  width:100%;
+}
+button {
+  background:#22c55e;
+  border:none;
+  color:white;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h2>Store Dashboard</h2>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+
+<div class="box">
+<h3>Create Store</h3>
+<input id="storeName" placeholder="Store name">
+<button onclick="createStore()">Create Store</button>
+</div>
+
+<div class="box">
+<h3>Add Product</h3>
+<input id="pname" placeholder="Product name">
+<input id="price" placeholder="Price">
+<button onclick="addProduct()">Add Product</button>
+</div>
+
+<div class="box">
+<h3>AI Store Builder</h3>
+<input id="niche" placeholder="e.g fitness, fashion">
+<button onclick="aiStore()">Generate AI Store</button>
+</div>
+
+</div>
+
+<script>
+const backendURL = "https://my-backend-1-tier.onrender.com";
+const token = localStorage.getItem("token");
+
+if(!token) location.href = "login.html";
+
+function logout(){
+  localStorage.clear();
+  location.href="login.html";
+}
+
+async function createStore(){
+  const res = await fetch(backendURL+"/create-store", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":token
+    },
+    body:JSON.stringify({ name: storeName.value })
+  });
+  alert((await res.json()).message || "done");
+}
+
+async function addProduct(){
+  const res = await fetch(backendURL+"/products", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":token
+    },
+    body:JSON.stringify({
+      name: pname.value,
+      price: price.value
+    })
+  });
+
+  alert("Product added");
+}
+
+async function aiStore(){
+  const res = await fetch(backendURL+"/ai/create-store", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":token
+    },
+    body:JSON.stringify({
+      storeName:"AI Store",
+      niche:niche.value
+    })
+  });
+
+  const data = await res.json();
+  alert("AI Store created!");
+  console.log(data);
+}
+</script>
+
+</body>
+</html>
